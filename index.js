@@ -1,20 +1,25 @@
 const http = require('http');
 require('dotenv').config();
+const getCurrentDate = require('./libs/date');
 
-let intervalId = null;
+let id = 0;
+
 http
   .createServer(function (res, req) {
-    if (!intervalId) {
-      intervalId = setInterval(() => {
-        console.log(Date());
-      }, process.env.INTERVAL_TIME);
-
-      setTimeout(() => {
-        clearInterval(intervalId);
-        req.end(Date());
-      }, process.env.STOP_TIMER_TIME);
+    if (res.url !== '/') {
+      return false;
     }
+
+    id++;
+    const intervalId = setInterval(() => {
+      console.log(id, getCurrentDate());
+    }, process.env.INTERVAL_TIME);
+
+    setTimeout(() => {
+      clearInterval(intervalId);
+      req.end(getCurrentDate());
+    }, process.env.STOP_TIMER_TIME);
   })
   .listen(process.env.SERVER_PORT);
 
-console.log(`HTTP server running on port ${process.env.SERVER_PORT}`); // del
+console.log(`HTTP server running on port ${process.env.SERVER_PORT}`);
